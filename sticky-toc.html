@@ -9,12 +9,6 @@
   <style>
     [x-cloak] { display: none !important; }
 
-    /* Above tablet breakpoint, nav sits at the very top (no burger menu offset) */
-    @media (min-width: 48rem) { .sticky-nav-bar { top: 0 !important; } }
-
-    .sticky-nav-inner { padding-left: 1rem; padding-right: 1rem; }
-    @media (min-width: 48rem) { .sticky-nav-inner { padding-left: 0; padding-right: 0; } }
-
     /* Hide burger / show desktop nav at 48rem */
     .burger { display: block; }
     .desktop-nav { display: none; }
@@ -88,9 +82,9 @@
             x-cloak
             @click="animated = true; open = !open"
             :aria-expanded="open.toString()"
-            class="flex w-full items-center justify-between pb-2 text-left"
+            class="flex w-full items-center text-left"
           >
-            <span class="text-lg font-bold">On this page</span>
+            <span class="text-lg font-bold mr-2">On this page</span>
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"
               class="flex-shrink-0 text-gray-500 transition-transform duration-200"
               :class="open ? 'rotate-180' : ''"
