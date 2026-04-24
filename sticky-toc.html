@@ -8,10 +8,21 @@
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <style>
     [x-cloak] { display: none !important; }
-    .sticky-nav-bar { top: 72px; }
-    @media (min-width: 48rem) { .sticky-nav-bar { top: 0; } }
+
+    /* Above tablet breakpoint, nav sits at the very top (no burger menu offset) */
+    @media (min-width: 48rem) { .sticky-nav-bar { top: 0 !important; } }
+
     .sticky-nav-inner { padding-left: 1rem; padding-right: 1rem; }
     @media (min-width: 48rem) { .sticky-nav-inner { padding-left: 0; padding-right: 0; } }
+
+    /* Hide burger / show desktop nav at 48rem */
+    .burger { display: block; }
+    .desktop-nav { display: none; }
+    @media (min-width: 48rem) {
+      .burger { display: none; }
+      .desktop-nav { display: flex; }
+    }
+
     #header.nav-stuck { box-shadow: none !important; }
   </style>
 </head>
@@ -21,13 +32,12 @@
   <header id="header" class="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm">
     <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
       <span class="font-bold text-lg">IOSH</span>
-      <nav class="hidden sm:flex gap-6 text-sm text-gray-600">
+      <nav class="desktop-nav gap-6 text-sm text-gray-600">
         <a href="#" class="hover:text-gray-900">Resources</a>
         <a href="#" class="hover:text-gray-900">Training</a>
         <a href="#" class="hover:text-gray-900">About</a>
       </nav>
-      <!-- Burger (mobile only) -->
-      <button class="sm:hidden text-gray-600" aria-label="Open menu">
+      <button class="burger text-gray-600" aria-label="Open menu">
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
           <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
         </svg>
@@ -41,13 +51,15 @@
     <p class="text-sm text-gray-400 mb-6">↓ Scroll down to see the nav stick and collapse</p>
 
     <h1 class="text-3xl font-bold mb-3">Hierarchy of controls</h1>
-    <p class="text-gray-600 mb-8">A systematic approach to minimising or eliminating exposure to hazards in occupational health and safety. Controls are ranked from most to least effective.</p>
+    <p class="text-gray-600 mb-3">The hierarchy of controls is a systematic approach used in occupational health and safety to minimise or eliminate exposure to hazards. It ranks control measures from most to least effective, helping safety professionals make informed decisions about the most appropriate intervention for a given situation.</p>
+    <p class="text-gray-600 mb-8">Understanding the hierarchy is fundamental to risk management. It provides a structured way of thinking about hazard control that goes beyond simply reaching for the most convenient solution, encouraging practitioners to consider whether a hazard can be removed entirely before accepting that workers must simply be protected from it.</p>
 
     <!-- Sticky nav component -->
     <div
-      x-data="{ open: true, stuck: false, navH: 0, animated: false }"
+      x-data="{ open: true, stuck: false, navH: 0, headerH: 0, animated: false }"
       x-init="
         navH = $refs.nav.offsetHeight;
+        headerH = document.getElementById('header').offsetHeight;
         new IntersectionObserver(
           ([entry]) => {
             animated = false;
@@ -66,9 +78,8 @@
 
       <div
         x-ref="nav"
-        :class="stuck
-          ? 'sticky-nav-bar fixed left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-lg py-3'
-          : 'relative py-4'"
+        :class="stuck ? 'sticky-nav-bar fixed left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-lg py-3' : 'relative py-4'"
+        :style="stuck ? `top: ${headerH}px` : ''"
       >
         <div :class="stuck ? 'sticky-nav-inner max-w-3xl mx-auto' : ''">
 
@@ -113,27 +124,43 @@
     </div>
     <!-- End sticky nav -->
 
-    <div class="mt-10 space-y-10">
+    <div class="mt-10 space-y-12">
+
       <section id="elimination">
         <h2 class="text-xl font-semibold mb-3">Elimination</h2>
-        <p class="text-gray-600">The most effective control measure is to eliminate the hazard entirely from the workplace. This removes all risk at source and is always the preferred approach where practicable.</p>
+        <p class="text-gray-600 mb-3">The most effective control measure is to eliminate the hazard entirely from the workplace. This removes all risk at source and is always the preferred approach where practicable. Elimination should always be the first question asked when assessing a hazard: is there any way to remove this entirely?</p>
+        <p class="text-gray-600 mb-3">In practice, elimination might mean redesigning a work process so a dangerous task is no longer required, discontinuing the use of a hazardous substance, or automating a manual operation that exposes workers to injury risk. The key characteristic of elimination is that the hazard ceases to exist in the workplace rather than simply being managed or reduced.</p>
+        <p class="text-gray-600">Examples include removing a trailing cable trip hazard by rerouting it through the wall, discontinuing a chemical cleaning process in favour of a mechanical alternative, or eliminating manual lifting by installing a conveyor system.</p>
       </section>
+
       <section id="substitution">
         <h2 class="text-xl font-semibold mb-3">Substitution</h2>
-        <p class="text-gray-600">Where elimination is not possible, substituting the hazard with something less dangerous can significantly reduce risk. Replacing a toxic solvent with a less harmful alternative is a common example.</p>
+        <p class="text-gray-600 mb-3">Where elimination is not possible, substituting the hazard with something less dangerous can significantly reduce risk. Substitution replaces a hazardous material, process, or piece of equipment with one that presents a lower level of risk, without removing the underlying function.</p>
+        <p class="text-gray-600 mb-3">Replacing a toxic solvent with a water-based alternative is a common example. Similarly, swapping a heavy tool for a lighter ergonomic model reduces musculoskeletal risk without eliminating the task itself. Substitution is most effective when the replacement is genuinely less hazardous rather than simply different — it requires careful evaluation to confirm that new risks are not introduced.</p>
+        <p class="text-gray-600">Other examples include replacing solvent-based paints with low-VOC alternatives, swapping abrasive blasting with wet blasting to reduce silica dust, or using a scissor lift in place of an extension ladder for at-height work.</p>
       </section>
+
       <section id="engineering">
         <h2 class="text-xl font-semibold mb-3">Engineering controls</h2>
-        <p class="text-gray-600">Physical changes to the work environment that reduce exposure to hazards — guarding machinery, installing local exhaust ventilation, or using interlocks to prevent unsafe operation.</p>
+        <p class="text-gray-600 mb-3">Engineering controls involve physical changes to the work environment or equipment that reduce exposure to hazards. Unlike administrative controls, they do not rely on worker behaviour to be effective — once installed, they operate continuously. This makes them more reliable as a control measure.</p>
+        <p class="text-gray-600 mb-3">Common engineering controls include machine guarding to prevent contact with moving parts, local exhaust ventilation (LEV) to capture airborne contaminants at source, interlocks that prevent machinery from operating in an unsafe state, and noise enclosures that reduce sound levels before they reach workers.</p>
+        <p class="text-gray-600">The selection of engineering controls should be informed by a thorough risk assessment. Controls that isolate workers from the hazard entirely — such as fully enclosed remote-operated systems — are generally preferable to those that only reduce exposure, such as ventilation.</p>
       </section>
+
       <section id="admin">
         <h2 class="text-xl font-semibold mb-3">Administrative controls</h2>
-        <p class="text-gray-600">Changes to how work is done: safe work procedures, job rotation, restricted access arrangements, and training programmes that limit workers' exposure to hazards.</p>
+        <p class="text-gray-600 mb-3">Administrative controls change the way work is organised or carried out in order to limit workers' exposure to hazards. They do not remove hazards from the environment but reduce the likelihood or duration of exposure through procedural and behavioural means.</p>
+        <p class="text-gray-600 mb-3">Examples include job rotation to limit the time any individual spends performing a repetitive task, permit-to-work systems that govern access to hazardous areas, safe work procedures that define how a task must be completed, and training programmes that ensure workers understand risks and how to manage them.</p>
+        <p class="text-gray-600">Because administrative controls depend on human compliance, they are generally considered less reliable than elimination, substitution, or engineering controls. They are most effective when combined with higher-order controls, or in situations where engineering controls are not practicable.</p>
       </section>
-      <section>
+
+      <section id="ppe">
         <h2 class="text-xl font-semibold mb-3">Personal protective equipment</h2>
-        <p class="text-gray-600">The last resort when other controls are not sufficient on their own. PPE includes gloves, safety glasses, hearing protection, and respiratory equipment.</p>
+        <p class="text-gray-600 mb-3">Personal protective equipment (PPE) is the last line of defence when other controls cannot adequately reduce risk. It does not remove or reduce the hazard — it simply creates a barrier between the worker and the source of harm. Because of this, PPE should never be relied upon as the primary control measure where higher-order controls are practicable.</p>
+        <p class="text-gray-600 mb-3">PPE includes a wide range of equipment: safety helmets, eye and face protection, hearing protection, respiratory protective equipment (RPE), gloves, safety footwear, and high-visibility clothing. Selection must be appropriate to the specific hazard, correctly fitted to the individual, and maintained in good condition to remain effective.</p>
+        <p class="text-gray-600">Employers have a duty to provide suitable PPE free of charge where it is required, and to ensure workers are trained in its correct use. Workers have a corresponding duty to use it properly and report defects. Even well-selected PPE provides no protection if it is worn incorrectly, removed during the task, or poorly maintained.</p>
       </section>
+
     </div>
 
   </main>
