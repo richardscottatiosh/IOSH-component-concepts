@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sticky nav demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>
+    [x-cloak] { display: none !important; }
+    .sticky-nav-bar { top: 72px; }
+    @media (min-width: 48rem) { .sticky-nav-bar { top: 0; } }
+    .sticky-nav-inner { padding-left: 1rem; padding-right: 1rem; }
+    @media (min-width: 48rem) { .sticky-nav-inner { padding-left: 0; padding-right: 0; } }
+    #header.nav-stuck { box-shadow: none !important; }
+  </style>
+</head>
+<body class="bg-white text-gray-900">
+
+  <!-- Simulated site header -->
+  <header id="header" class="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm">
+    <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+      <span class="font-bold text-lg">IOSH</span>
+      <nav class="hidden sm:flex gap-6 text-sm text-gray-600">
+        <a href="#" class="hover:text-gray-900">Resources</a>
+        <a href="#" class="hover:text-gray-900">Training</a>
+        <a href="#" class="hover:text-gray-900">About</a>
+      </nav>
+      <!-- Burger (mobile only) -->
+      <button class="sm:hidden text-gray-600" aria-label="Open menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Page content -->
+  <main class="max-w-3xl mx-auto px-4 pt-24 pb-32">
+
+    <p class="text-sm text-gray-400 mb-6">↓ Scroll down to see the nav stick and collapse</p>
+
+    <h1 class="text-3xl font-bold mb-3">Hierarchy of controls</h1>
+    <p class="text-gray-600 mb-8">A systematic approach to minimising or eliminating exposure to hazards in occupational health and safety. Controls are ranked from most to least effective.</p>
+
+    <!-- Sticky nav component -->
+    <div
+      x-data="{ open: true, stuck: false, navH: 0, animated: false }"
+      x-init="
+        navH = $refs.nav.offsetHeight;
+        new IntersectionObserver(
+          ([entry]) => {
+            animated = false;
+            stuck = !entry.isIntersecting;
+            open = !stuck;
+            const header = document.getElementById('header');
+            if (header) header.classList.toggle('nav-stuck', stuck);
+          }
+        ).observe($refs.sentinel)
+      "
+      class="relative"
+    >
+      <div x-ref="sentinel" class="absolute -top-px left-0 h-px w-full pointer-events-none" aria-hidden="true"></div>
+
+      <div x-show="stuck" x-cloak :style="`height: ${navH}px`" aria-hidden="true"></div>
+
+      <div
+        x-ref="nav"
+        :class="stuck
+          ? 'sticky-nav-bar fixed left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-lg py-3'
+          : 'relative py-4'"
+      >
+        <div :class="stuck ? 'sticky-nav-inner max-w-3xl mx-auto' : ''">
+
+          <button
+            x-show="stuck"
+            x-cloak
+            @click="animated = true; open = !open"
+            :aria-expanded="open.toString()"
+            class="flex w-full items-center justify-between pb-2 text-left"
+          >
+            <span class="text-lg font-bold">On this page</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"
+              class="flex-shrink-0 text-gray-500 transition-transform duration-200"
+              :class="open ? 'rotate-180' : ''"
+            >
+              <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
+            </svg>
+          </button>
+
+          <div
+            style="overflow: hidden;"
+            :style="{
+              maxHeight: !stuck ? 'none' : (open ? '800px' : '0'),
+              transition: animated ? 'max-height 0.35s ease' : 'none'
+            }"
+          >
+            <ul>
+              <li>
+                <span x-show="!stuck" class="text-lg font-bold">On this page</span>
+                <ul class="grid gap-3 border-l-2 border-gray-200 mt-4 ml-2 pl-3">
+                  <li><a href="#elimination" class="text-blue-600 hover:underline text-sm">Explanation of the hierarchy of control</a></li>
+                  <li><a href="#substitution" class="text-blue-600 hover:underline text-sm">Practical examples for each control level</a></li>
+                  <li><a href="#engineering" class="text-blue-600 hover:underline text-sm">Guidance on PPE selection and use</a></li>
+                  <li><a href="#admin" class="text-blue-600 hover:underline text-sm">Tips for making informed decisions</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <!-- End sticky nav -->
+
+    <div class="mt-10 space-y-10">
+      <section id="elimination">
+        <h2 class="text-xl font-semibold mb-3">Elimination</h2>
+        <p class="text-gray-600">The most effective control measure is to eliminate the hazard entirely from the workplace. This removes all risk at source and is always the preferred approach where practicable.</p>
+      </section>
+      <section id="substitution">
+        <h2 class="text-xl font-semibold mb-3">Substitution</h2>
+        <p class="text-gray-600">Where elimination is not possible, substituting the hazard with something less dangerous can significantly reduce risk. Replacing a toxic solvent with a less harmful alternative is a common example.</p>
+      </section>
+      <section id="engineering">
+        <h2 class="text-xl font-semibold mb-3">Engineering controls</h2>
+        <p class="text-gray-600">Physical changes to the work environment that reduce exposure to hazards — guarding machinery, installing local exhaust ventilation, or using interlocks to prevent unsafe operation.</p>
+      </section>
+      <section id="admin">
+        <h2 class="text-xl font-semibold mb-3">Administrative controls</h2>
+        <p class="text-gray-600">Changes to how work is done: safe work procedures, job rotation, restricted access arrangements, and training programmes that limit workers' exposure to hazards.</p>
+      </section>
+      <section>
+        <h2 class="text-xl font-semibold mb-3">Personal protective equipment</h2>
+        <p class="text-gray-600">The last resort when other controls are not sufficient on their own. PPE includes gloves, safety glasses, hearing protection, and respiratory equipment.</p>
+      </section>
+    </div>
+
+  </main>
+
+</body>
+</html>
